@@ -2,12 +2,19 @@ import { createRouter, createWebHistory } from 'vue-router'
 import HomeView from '../views/HomeView.vue'
 import DynamicRoutingView from '@/views/router/DynamicRoutingView.vue'
 import NestRoutingView from '@/views/router/NestRoutingView.vue'
+import LoginView from '@/views/Login/LoginView.vue'
 
 const routes = [
   {
     path: '/',
     name: 'home',
     component: HomeView,
+  },
+  //登录
+  {
+    path: '/login',
+    name: 'login',
+    component: LoginView,
   },
   //动态导入
   {

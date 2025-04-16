@@ -53,6 +53,11 @@ export const ROUTE_PREFIX = getEnv('ROUTE_PREFIX', '')
 export const REQUEST_TIMEOUT = Number(getEnv('REQUEST_TIMEOUT', 10000))
 
 /**
+ * 认证 Token 参数名
+ */
+export const AUTH_TOKEN_NAME = getEnv('AUTH_TOKEN_NAME', 'odk-token')
+
+/**
  * 默认语言
  */
 export const DEFAULT_LOCALE = getEnv('DEFAULT_LOCALE', 'zh-CN')
@@ -74,6 +79,7 @@ export default {
   REQUEST_TIMEOUT,
   DEFAULT_LOCALE,
   ENABLE_LOGS,
+  AUTH_TOKEN_NAME,
   // 添加 Vite 内置环境变量
   BASE_URL: import.meta.env.BASE_URL,
   DEV: import.meta.env.DEV,

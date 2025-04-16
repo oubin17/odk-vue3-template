@@ -1,53 +1,52 @@
 <script setup lang="ts">
-import { post } from '@/utils/api'
 import { onMounted, ref } from 'vue'
+import type { LoginParams, LoginResult } from '@/types/user'
+import { useUserStore } from '@/stores/user'
 
-interface LoginParams {
-  loginId: string
-  loginType: string
-  identifyType: string
-  identifyValue: string
-}
-interface AccessToken {
-  tokenType: string
-  tokenValue: string
-}
-interface UserProfile {
-  userName: string
-  gender: string | null
-  birthDay: string | null
-}
+//获取用户登录 store
+const userStore = useUserStore()
 
-interface LoginResult {
-  userId: string,
-  userType: string,
-  userStatus: string,
-  "accessToken": AccessToken,
-  "userProfile": UserProfile,
-  "token": string,
-}
-const login = async (params: LoginParams): Promise<LoginResult> => {
-  const res = await post('/user/login', params)
-  return res as LoginResult
-}
+const loginRes = ref(userStore.userInfo)
 
-const loginRes = ref<LoginResult>()
 
 onMounted(() => {
-  const params: LoginParams = {
-    loginId: 'root',
-    loginType: '1',
-    identifyType: '1',
-    identifyValue: '123456'
+  if (!userStore.isLoggedIn) {
+    const params: LoginParams = {
+      loginId: 'root',
+      loginType: '1',
+      identifyType: '1',
+      identifyValue: '123456'
+    }
+    userStore.login(params).then((res: LoginResult) => {
+      console.log(res)
+    }).catch(err => {
+      console.log('登录失败：', err)
+    })
   }
-  login(params).then((res: LoginResult) => {
-    loginRes.value = res
-    console.log(res)
-  })
 })
 
 </script>
 <template>
-  登录信息：{{ loginRes }}
+  <div v-if="userStore.isLoggedIn">
+    <h2>已登录</h2>
+    <p>用户名：{{ userStore.userInfo?.userProfile.userName }}</p>
+    <p>用户ID：{{ userStore.userInfo?.userId }}</p>
+  </div>
+  <div v-else>
+    <h2>未登录</h2>
+    <p>请先登录</p>
+  </div>
+  <div class="debug-info">
+    <h3>调试信息</h3>
+    登录信息：{{ loginRes }}
+  </div>
 </template>
-<style scoped></style>
+<style scoped>
+.debug-info {
+  margin-top: 20px;
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  background-color: #f5f5f5;
+}
+</style>

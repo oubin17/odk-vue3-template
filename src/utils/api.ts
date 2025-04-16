@@ -1,7 +1,7 @@
 import axios from 'axios'
-import type { AxiosRequestConfig, AxiosError } from 'axios'
-import type { AxiosResponse } from 'axios'
-import { API_BASE_URL, REQUEST_TIMEOUT } from '@/utils/env'
+import type { AxiosRequestConfig, AxiosResponse, AxiosError } from 'axios'
+import { API_BASE_URL, AUTH_TOKEN_NAME, REQUEST_TIMEOUT } from '@/utils/env'
+import { useUserStore } from '@/stores/user'
 
 // 定义接口响应数据结构
 interface ApiResponse<T = unknown> {
@@ -25,11 +25,13 @@ const instance = axios.create({
 // 请求拦截器
 instance.interceptors.request.use(
   (config) => {
-    // 在发送请求之前做些什么，例如添加 token
-    // const token = localStorage.getItem('token');
-    // if (token) {
-    //   config.headers.Authorization = `Bearer ${token}`;
-    // }
+    //如果是登录接口，不需要携带token
+    const userStore = useUserStore()
+    const token = userStore.userInfo?.token
+    if (token) {
+      config.headers = config.headers || {}
+      config.headers[AUTH_TOKEN_NAME] = token
+    }
     return config
   },
   (error) => {

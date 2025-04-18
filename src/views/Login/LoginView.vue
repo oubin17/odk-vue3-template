@@ -93,6 +93,10 @@ const handleLogin = async (formEl: FormInstance | undefined) => {
   </div>
 </template>
 <style scoped>
+/**
+align-items: center; 垂直居中
+justify-content: center; 水平居中
+*/
 .login-container {
   display: flex;
   flex-direction: column;

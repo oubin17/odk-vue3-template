@@ -5,7 +5,8 @@ import { useUserStore } from '@/stores/user'
 import { useRouter } from 'vue-router'
 import { ElMessage, type FormInstance, type FormRules } from 'element-plus'
 
-
+// 引入 Iconify 图标组件
+import { Icon } from '@iconify/vue'
 
 //获取用户登录 store
 const userStore = useUserStore()
@@ -67,8 +68,13 @@ const handleLogin = async (formEl: FormInstance | undefined) => {
     <div v-if="userStore.isLoggedIn" class="login-success">
       <h2>登录成功</h2>
       <p>欢迎回来，{{ userStore.userInfo?.userProfile.userName }}！</p>
-      <el-button type="primary" @click="router.push('/')">返回首页</el-button>
-      <el-button type="primary" @click="userStore.logout">退出登录</el-button>
+      <el-button type="primary" @click="router.push('/')">
+
+        <Icon icon="material-symbols:family-home-outline" class="icon-margin" /> 返回首页
+      </el-button>
+      <el-button type="primary" @click="userStore.logout">
+        <Icon icon="mdi:logout" class="icon-margin" /> 退出登录
+      </el-button>
     </div>
     <div v-else class="login-form-wrapper">
       <div class="login-header">
@@ -84,9 +90,11 @@ const handleLogin = async (formEl: FormInstance | undefined) => {
         </el-form-item>
         <el-form-item>
           <el-button type="primary" :loading="loading" @click="handleLogin(loginFormRef)">
-            登录
+            <Icon icon="mdi:login" class="icon-margin" /> 登录
           </el-button>
-          <el-button @click="loginFormRef?.resetFields()">重置</el-button>
+          <el-button @click="loginFormRef?.resetFields()">
+            <Icon icon="mdi:refresh" class="icon-margin" /> 重置
+          </el-button>
         </el-form-item>
       </el-form>
     </div>
@@ -130,5 +138,10 @@ justify-content: center; 水平居中
   border-radius: 8px;
   box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.1);
   background-color: #f0f9eb;
+}
+
+/* 添加图标相关样式 */
+.icon-margin {
+  margin-right: 4px;
 }
 </style>

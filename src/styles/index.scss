@@ -3,6 +3,9 @@
 @use './element/index.scss' as *;
 @use './element/override.scss' as *;
 
+@use './variables.scss' as *;
+@use './common/common.scss' as *;
+
 // 全局样式
 body {
   font-family:

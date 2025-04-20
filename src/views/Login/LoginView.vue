@@ -78,7 +78,7 @@ const handleLogin = async (formEl: FormInstance | undefined) => {
         <Icon icon="mdi:logout" class="icon-margin" /> 退出登录
       </el-button>
     </div>
-    <div v-else class="login-form-wrapper">
+    <div v-else class="form-wrapper login-form-wrapper">
       <div class="login-header">
         <h2>用户登录</h2>
       </div>
@@ -114,15 +114,6 @@ justify-content: center; 水平居中
   justify-content: center;
   min-height: 70vh;
   padding: 20px;
-}
-
-.login-form-wrapper {
-  width: 100%;
-  max-width: 400px;
-  padding: 20px;
-  border-radius: 8px;
-  box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.1);
-  background-color: #fff;
 }
 
 .login-header {

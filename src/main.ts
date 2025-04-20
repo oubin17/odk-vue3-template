@@ -1,3 +1,7 @@
+// 直接导入所有样式
+// import 'element-plus/dist/index.css'
+import 'element-plus/es/components/message/style/css'
+
 import './styles/index.scss'
 import './assets/main.css'
 

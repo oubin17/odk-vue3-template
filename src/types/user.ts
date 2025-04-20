@@ -21,8 +21,33 @@ export interface UserProfile {
   birthDay: string | null
 }
 
+// 用户状态枚举
+export enum UserStatus {
+  CLOSED = '-1', // 销户
+  NORMAL = '0', // 正常
+  FROZEN = '2', // 冻结
+}
+// export class UserStatusObj {
+//   constructor(
+//     public userStatus: UserStatus,
+//     public userStatusDesc: string,
+//   ) {}
+// }
+
+// 用户状态映射到中文描述
+// export const UserStatusMap: Record<string, UserStatusObj> = {
+//   '0': new UserStatusObj(UserStatus.NORMAL, '正常'),
+//   '2': new UserStatusObj(UserStatus.FROZEN, '冻结'),
+//   '-1': new UserStatusObj(UserStatus.CLOSED, '销户'),
+// }
+export const UserStatusMap: Record<string, string> = {
+  '0': '正常',
+  '2': '冻结',
+  '-1': '销户',
+}
+
 // 登录结果接口
-export interface LoginResult {
+export interface UserEntity {
   userId: string
   userType: string
   userStatus: string

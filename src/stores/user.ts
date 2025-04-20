@@ -1,4 +1,4 @@
-import type { LoginParams, LoginResult } from '@/types/user'
+import type { LoginParams, UserEntity } from '@/types/user'
 import { post } from '@/utils/api'
 import { defineStore } from 'pinia'
 import { ref } from 'vue'
@@ -10,13 +10,13 @@ export const useUserStore = defineStore(
     const storedUserInfo = localStorage.getItem('userInfo')
 
     // 用户登录信息
-    const userInfo = ref<LoginResult | null>(storedUserInfo ? JSON.parse(storedUserInfo) : null)
+    const userInfo = ref<UserEntity | null>(storedUserInfo ? JSON.parse(storedUserInfo) : null)
 
     const isLoggedIn = ref(!!userInfo.value)
 
-    const login = async (params: LoginParams): Promise<LoginResult> => {
+    const login = async (params: LoginParams): Promise<UserEntity> => {
       try {
-        const res = await post<LoginResult>('/user/login', params)
+        const res = await post<UserEntity>('/user/login', params)
         userInfo.value = res
         isLoggedIn.value = true
 

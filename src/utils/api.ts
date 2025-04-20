@@ -126,7 +126,21 @@ export async function request<T = unknown>(config: AxiosRequestConfig): Promise<
       // 成功则返回 data 数据
       return result.data
     } else {
-      // 失败则抛出错误信息
+      // 处理 token 无效的情况
+      const tokenInvalidCodes = ['017', '020', '021', '022']
+      if (tokenInvalidCodes.includes(result.errorCode)) {
+        console.error('登录已过期，请重新登录')
+        // 获取当前路由
+        const currentPath = window.location.pathname + window.location.search
+        // 清除用户信息
+        const userStore = useUserStore()
+        userStore.logout()
+        // 跳转到登录页，并带上重定向参数
+        window.location.href = `/login?redirect=${encodeURIComponent(currentPath)}`
+        return Promise.reject(new Error('登录已过期，请重新登录'))
+      }
+
+      // 其他错误情况
       const errorMessage = result.errorContext || `请求失败: ${result.errorCode}`
       console.error(errorMessage)
       throw new Error(errorMessage)

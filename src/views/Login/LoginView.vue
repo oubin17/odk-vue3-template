@@ -2,7 +2,7 @@
 import { reactive, ref } from 'vue'
 import type { LoginParams } from '@/types/user'
 import { useUserStore } from '@/stores/user'
-import { useRouter } from 'vue-router'
+import { useRoute, useRouter } from 'vue-router'
 import { ElMessage, type FormInstance, type FormRules } from 'element-plus'
 
 // 引入 Iconify 图标组件
@@ -12,6 +12,7 @@ import { Icon } from '@iconify/vue'
 const userStore = useUserStore()
 
 const router = useRouter()
+const route = useRoute()
 
 const loginFormRef = ref()
 
@@ -38,8 +39,6 @@ const loginRules = reactive<FormRules>({
 // 登录状态
 const loading = ref(false)
 
-
-
 // 登录方法
 const handleLogin = async (formEl: FormInstance | undefined) => {
   if (!formEl) return
@@ -50,8 +49,11 @@ const handleLogin = async (formEl: FormInstance | undefined) => {
       try {
         await userStore.login(loginForm)
         ElMessage.success('登录成功')
-        // 登录成功，跳转到首页
-        router.push('/')
+        // 1. 获取重定向路径（处理未定义情况）
+        const redirectPath = route.query.redirect?.toString() || '/'
+        // 2. 跳转到 redirect 或默认页面
+        router.replace(redirectPath || '/') // 使用 replace 避免历史记录残留
+        // router.push(redirectPath || '/')
       } catch (error) {
         console.error('登录失败：', error)
         ElMessage.error('登录失败，请检查账号密码')

@@ -34,7 +34,9 @@ export default defineConfig(({ mode }) => {
       }),
       Components({
         resolvers: [
-          ElementPlusResolver(),
+          ElementPlusResolver({
+            importStyle: 'sass', // 使用 SCSS 主题
+          }),
           // 自动注册图标组件
           IconsResolver({
             enabledCollections: ['mdi'],
@@ -48,6 +50,13 @@ export default defineConfig(({ mode }) => {
     resolve: {
       alias: {
         '@': fileURLToPath(new URL('./src', import.meta.url)),
+      },
+    },
+    css: {
+      preprocessorOptions: {
+        scss: {
+          additionalData: `@use "@/styles/element/index.scss" as *;`,
+        },
       },
     },
   }

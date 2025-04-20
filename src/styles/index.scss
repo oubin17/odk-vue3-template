@@ -1,0 +1,16 @@
+//全局样式入口文件
+// 导入自定义的 Element Plus 样式
+@use './element/index.scss' as *;
+@use './element/override.scss' as *;
+
+// 全局样式
+body {
+  font-family:
+    'Helvetica Neue', Helvetica, 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', '微软雅黑',
+    Arial, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  margin: 0;
+}
+
+// 其他全局样式...

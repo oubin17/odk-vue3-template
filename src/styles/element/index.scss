@@ -1,0 +1,32 @@
+// src/styles/element/index.scss
+/* 覆盖组件变量 */
+$--button-border-radius: 4px;
+$--button-bg-color: #f0f0f0; // 定义按钮默认背景颜色
+
+$--color-success: #c23a7c; // 定义 success 颜色变量
+
+/* 必须导入 Element Plus 的 SCSS 入口 */
+@forward 'element-plus/theme-chalk/src/common/var.scss' with (
+  $colors: (
+    'primary': (
+      'base': #409eff,
+    ),
+    'success': (
+      'base': #67c23a,
+    ),
+    'warning': (
+      'base': #e6a23c,
+    ),
+    'danger': (
+      'base': #f56c6c,
+    ),
+    'info': (
+      'base': #909399,
+    ),
+  ),
+  $button: (
+    // 'border-radius': $--button-border-radius,
+    // 这个只会影响默认按钮，不会影响 primary 按钮！！！如果需要修改默认按钮的颜色，最好是修改系统的主题色
+    'bg-color': #c23a7c,
+  )
+);

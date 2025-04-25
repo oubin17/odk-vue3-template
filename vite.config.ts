@@ -33,6 +33,15 @@ export default defineConfig(({ mode }) => {
         ],
       }),
       Components({
+        // 搜索组件的默认目录
+        dirs: ['src/components'],
+        // 默认文件扩展名
+        extensions: ['vue'],
+        // 是否递归搜索子目录
+        deep: true,
+        // 自动生成 `components.d.ts`，如果安装了 TypeScript 则默认为 `true`
+        dts: true,
+
         resolvers: [
           ElementPlusResolver({
             importStyle: 'sass', // 使用 SCSS 主题

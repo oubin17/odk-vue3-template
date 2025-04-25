@@ -1,11 +1,11 @@
 <script setup lang="ts">
-import { reactive, ref, onMounted } from 'vue'
+import { reactive, ref } from 'vue'
 import type { LoginParams } from '@/types/user'
 import { useUserStore } from '@/stores/user'
 import { useRoute, useRouter } from 'vue-router'
 import { ElMessage, type FormInstance, type FormRules } from 'element-plus'
-// 引入 JSEncrypt 用于 RSA 加密
-import JSEncrypt from 'jsencrypt'
+// 引入加密工具函数
+import { encryptWithPublicKey } from '@/utils/crypto'
 
 // 引入 Iconify 图标组件
 import { Icon } from '@iconify/vue'
@@ -17,28 +17,6 @@ const router = useRouter()
 const route = useRoute()
 
 const loginFormRef = ref()
-
-// 公钥内容
-const publicKey = ref('')
-
-// 加载公钥
-const loadPublicKey = async () => {
-  try {
-    const response = await fetch('/src/keys/public_key.pem')
-    if (!response.ok) {
-      throw new Error('无法加载公钥文件')
-    }
-    publicKey.value = await response.text()
-  } catch (error) {
-    console.error('加载公钥失败:', error)
-    ElMessage.error('加载公钥失败，请刷新页面重试')
-  }
-}
-
-// 在组件挂载时加载公钥
-onMounted(() => {
-  loadPublicKey()
-})
 
 // 登录表单数据
 const loginForm = reactive<LoginParams>({
@@ -62,24 +40,6 @@ const loginRules = reactive<FormRules>({
 // 登录状态
 const loading = ref(false)
 
-// 使用公钥加密密码
-const encryptPassword = (password: string): string => {
-  if (!publicKey.value) {
-    ElMessage.error('公钥未加载，无法加密密码')
-    throw new Error('公钥未加载')
-  }
-  
-  const encryptor = new JSEncrypt()
-  encryptor.setPublicKey(publicKey.value)
-  const encrypted = encryptor.encrypt(password)
-  
-  if (!encrypted) {
-    throw new Error('密码加密失败')
-  }
-  
-  return encrypted
-}
-
 // 登录方法
 const handleLogin = async (formEl: FormInstance | undefined) => {
   if (!formEl) return
@@ -91,8 +51,8 @@ const handleLogin = async (formEl: FormInstance | undefined) => {
         // 创建一个新的登录表单对象，避免修改原始表单
         const loginData = { ...loginForm }
         
-        // 加密密码
-        loginData.identifyValue = encryptPassword(loginForm.identifyValue)
+        // 使用工具函数加密密码
+        loginData.identifyValue = encryptWithPublicKey(loginForm.identifyValue)
         
         // 使用加密后的数据进行登录
         await userStore.login(loginData)
@@ -101,7 +61,6 @@ const handleLogin = async (formEl: FormInstance | undefined) => {
         const redirectPath = route.query.redirect?.toString() || '/'
         // 2. 跳转到 redirect 或默认页面
         router.replace(redirectPath || '/') // 使用 replace 避免历史记录残留
-        // router.push(redirectPath || '/')
       } catch (error) {
         console.error('登录失败：', error)
         ElMessage.error('登录失败，请检查账号密码')

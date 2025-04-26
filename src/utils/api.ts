@@ -1,6 +1,6 @@
 import axios from 'axios'
 import type { AxiosRequestConfig, AxiosResponse, AxiosError } from 'axios'
-import { API_BASE_URL, AUTH_TOKEN_NAME, REQUEST_TIMEOUT } from '@/utils/env'
+import { API_BASE_URL, AUTH_TOKEN_NAME, REQUEST_TIMEOUT, ROUTE_PREFIX } from '@/utils/env'
 import { useUserStore } from '@/stores/user'
 
 // 定义接口响应数据结构
@@ -39,9 +39,41 @@ instance.interceptors.request.use(
   },
 )
 
+// 定义处理 token 失效的函数
+const handleTokenInvalid = () => {
+  console.error('登录已过期，请重新登录')
+  
+  // 获取当前路由
+  let currentPath = window.location.pathname + window.location.search
+  
+  // 如果当前路径已经包含了前缀，则移除前缀，避免重复
+  if (ROUTE_PREFIX && currentPath.startsWith(ROUTE_PREFIX)) {
+    currentPath = currentPath.substring(ROUTE_PREFIX.length)
+  }
+  
+  // 清除用户信息
+  const userStore = useUserStore()
+  userStore.logout()
+  
+  // 跳转到登录页，并带上重定向参数
+  window.location.href = `${ROUTE_PREFIX}/login?redirect=${encodeURIComponent(currentPath)}`
+}
+
+// 检查是否为 token 失效的错误码
+const isTokenInvalidError = (errorCode: string): boolean => {
+  const tokenInvalidCodes = ['017', '020', '021', '022']
+  return tokenInvalidCodes.includes(errorCode)
+}
+
 // 响应拦截器
 instance.interceptors.response.use(
   (response) => {
+    // 检查响应数据中是否包含 token 失效的错误信息
+    const responseData = response.data as ApiResponse<unknown>
+    if (!responseData.success && isTokenInvalidError(responseData.errorCode)) {
+      handleTokenInvalid()
+      return Promise.reject(new Error('登录已过期，请重新登录'))
+    }
     return response
   },
   (error: AxiosError) => {
@@ -60,12 +92,20 @@ instance.interceptors.response.use(
     // 处理 HTTP 状态码错误
     const { response } = error
     if (response) {
-      const { status } = response
+      const { status, data } = response
       let message = ''
 
       switch (status) {
         case 400:
-          message = '请求错误'
+          // 处理 token 无效的情况
+          if (data && typeof data === 'object' && 'errorCode' in data) {
+            const apiResponse = data as ApiResponse<unknown>
+            if (isTokenInvalidError(apiResponse.errorCode)) {
+              handleTokenInvalid()
+              return Promise.reject(new Error('登录已过期，请重新登录'))
+            }
+          }
+          message = '请求参数错误'
           break
         case 401:
           message = '未授权，请重新登录'
@@ -127,16 +167,8 @@ export async function request<T = unknown>(config: AxiosRequestConfig): Promise<
       return result.data
     } else {
       // 处理 token 无效的情况
-      const tokenInvalidCodes = ['017', '020', '021', '022']
-      if (tokenInvalidCodes.includes(result.errorCode)) {
-        console.error('登录已过期，请重新登录')
-        // 获取当前路由
-        const currentPath = window.location.pathname + window.location.search
-        // 清除用户信息
-        const userStore = useUserStore()
-        userStore.logout()
-        // 跳转到登录页，并带上重定向参数
-        window.location.href = `/login?redirect=${encodeURIComponent(currentPath)}`
+      if (isTokenInvalidError(result.errorCode)) {
+        handleTokenInvalid()
         return Promise.reject(new Error('登录已过期，请重新登录'))
       }
 
